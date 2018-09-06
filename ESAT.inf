@@ -1,0 +1,63 @@
+; Copyright (c) 2018 Theia Space, Universidad Politecnica de Madrid
+;
+; This file is part of Theia Space's ESAT driver setup for Windows 7
+;
+; Theia Space's ESAT driver setup for Windows 7 is free software: you
+; can redistribute it and/or modify it under the terms of the GNU
+; General Public License as published by the Free Software Foundation,
+; either version 3 of the License, or (at your option) any later
+; version.
+;
+; Theia Space's ESAT driver setup for Windows 7 library is distributed
+; in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
+; A PARTICULAR PURPOSE.  See the GNU General Public License for more
+; details.
+;
+; You should have received a copy of the GNU General Public License
+; along with Theia Space's ESAT driver setup for Windows 7.  If not,
+; see <http://www.gnu.org/licenses/>.
+;
+; Serial port driver setup for Theia Space's ESAT Boards under Windows 7.
+
+[Version]
+Signature="$Windows NT$" 
+Class=Ports
+ClassGuid={4D36E978-E325-11CE-BFC1-08002BE10318}
+Provider=%MANUFACTURER%
+DriverVer=09/06/2018,1.0.0.0
+
+[Strings]
+DISPLAY_NAME="USB Serial Driver"
+ESAT_ADCS="ESAT Attitude and Determination Control Subsystem"
+ESAT_COM="ESAT Communications Subsystem"
+ESAT_EPS="ESAT Electrical Power Subsystem"
+ESAT_OBC="ESAT On-Board Computer"
+MANUFACTURER="Theia Space, Universidad Politecnica de Madrid"
+
+[Manufacturer]
+%MANUFACTURER%=Models, NT, NTamd64                                    ; Use Models.NT (for x86) or Models.NTamd64 (for x86_64).
+
+[Models.NT]
+%ESAT_ADCS%=Install, USB\Vid_1D50&Pid_6137&MI_00, USB\Vid_1D50&Pid_6137&MI_01
+%ESAT_COM%=Install, USB\Vid_1D50&Pid_6138
+%ESAT_EPS%=Install, USB\Vid_1D50&Pid_6136
+%ESAT_OBC%=Install, USB\Vid_1D50&Pid_6135
+
+[Models.NTamd64]
+%ESAT_ADCS%=Install, USB\Vid_1D50&Pid_6137&MI_00, USB\Vid_1D50&Pid_6137&MI_01
+%ESAT_COM%=Install, USB\Vid_1D50&Pid_6138
+%ESAT_EPS%=Install, USB\Vid_1D50&Pid_6136
+%ESAT_OBC%=Install, USB\Vid_1D50&Pid_6135
+
+[Install]
+Include=mdmcpq.inf                                                    ; Include the modem INF.
+CopyFiles=FakeModemCopyFileSection                                    ; Copy files as per FakeModemCopyFileSection (from the included modem INF).
+AddReg=AddSerialPortProperties, LowerFilterAddReg                     ; Add registry entries as per AddSerialPortProperties (defined below) and LowerFilterAddReg (from the included modem INF, as recommended in https://support.microsoft.com/en-us/help/837637/how-to-use-or-to-reference-the-usbser-sys-driver-from-universal-serial).
+
+[Install.Services]
+Include=mdmcpq.inf                                                    ; Include the modem INF.
+AddService=usbser, 0x00000002, LowerFilter_Service_Inst               ; Install service usbser as a PnP function driver (0x2: SPSVCINST_ASSOCSERVICE) as per LowerFilter_Service_Inst (from the included modem INF, as recommended in https://support.microsoft.com/en-us/help/837637/how-to-use-or-to-reference-the-usbser-sys-driver-from-universal-serial).
+
+[AddSerialPortProperties]
+HKR, , EnumPropPages32, , "MsPorts.dll,SerialPortPropPageProvider"    ; Add the serial port property page to the device properties dialog.
